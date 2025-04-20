@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Age Calculator | Precision Time Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #2563eb;
+            --background: #f8fafc;
+            --text: #1e293b;
+        }
+
+        [data-theme="dark"] {
+            --background: #0f172a;
+            --text: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .input-section {
+            position: relative;
+        }
+
+        .date-input {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--primary);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: transparent;
+            color: var(--text);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card p {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .visualization {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .time-visual {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0% 100%);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Precision Age Calculator</h1>
+
+        <div class="calculator-grid">
+            <div class="input-section">
+                <div class="date-input">
+                    <input type="date" id="birthdate" max="">
+                    <button onclick="calculateAge()" style="padding: 1rem 2rem; background: var(--primary); color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
+                        Calculate
+                    </button>
+                </div>
+
+                <div class="result-grid" id="results">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="time-visual" id="timeVisual">
+                    <div style="position: absolute; text-align: center;">
+                        <span id="yearsDisplay">0</span>
+                        <div style="font-size: 0.8rem;">YEARS</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 2rem;" id="timeDetails">
+                    <!-- Time details will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set max date to today
+        document.getElementById('birthdate').max = new Date().toISOString().split('T')[0];
+
+        function calculateAge() {
+            const birthDate = new Date(document.getElementById('birthdate').value);
+            const now = new Date();
+            
+            if (!birthDate.getTime()) {
+                alert('Please select a valid birth date');
+                return;
+            }
+
+            // Age Calculation
+            let ageYears = now.getFullYear() - birthDate.getFullYear();
+            let ageMonths = now.getMonth() - birthDate.getMonth();
+            let ageDays = now.getDate() - birthDate.getDate();
+
+            if (ageDays < 0) {
+                ageMonths--;
+                ageDays += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+            }
+            if (ageMonths < 0) {
+                ageYears--;
+                ageMonths += 12;
+            }
+
+            // Time calculations
+            const diff = now - birthDate;
+            const years = diff / (1000 * 60 * 60 * 24 * 365.25);
+            const months = years * 12;
+            const days = diff / (1000 * 60 * 60 * 24);
+            const hours = days * 24;
+            const minutes = hours * 60;
+            const seconds = minutes * 60;
+
+            // Update Results
+            const resultsHTML = `
+                <div class="result-card">
+                    <h3>Years</h3>
+                    <p>${ageYears.toFixed(1)}</p>
+                </div>
+                <div class="result-card">
+                    <h3>Months</h3>
+                    <p>${Math.floor(months)}</p>
+                </div>
+                <div class="result-card">
+                    <h3>Days</h3>
+                    <p>${Math.floor(days)}</p>
+                </div>
+            `;
+            document.getElementById('results').innerHTML = resultsHTML;
+
+            // Update Visualization
+            document.getElementById('yearsDisplay').textContent = ageYears.toFixed(1);
+            document.getElementById('timeDetails').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                    <div>Total Hours:<br><strong>${Math.floor(hours).toLocaleString()}</strong></div>
+                    <div>Total Minutes:<br><strong>${Math.floor(minutes).toLocaleString()}</strong></div>
+                    <div>Total Seconds:<br><strong>${Math.floor(seconds).toLocaleString()}</strong></div>
+                </div>
+            `;
+
+            // Update circular progress
+            const progress = (years % 1) * 100;
+            document.querySelector('.time-visual').style.background = 
+                `conic-gradient(var(--primary) 0% ${progress}%, #e2e8f0 ${progress}% 100%)`;
+        }
+    </script>
+</body>
+</html>
